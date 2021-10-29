@@ -1,19 +1,19 @@
 
 drop procedure if exists customer_sign_up;
 -- creates new customer
-delimiter //
+delimiter $$
 create procedure customer_sign_up ( 
-email varchar(30),
+user_email varchar(30),
 user_password varchar(224), 
 phone_number varchar(11) 
 ) 
 begin
 	insert into user (first_name,last_name, user_password, phone_number,email,user_role) 
-	values (null, null, SHA2(user_password, 224),phone_number,email,'customer');
-	select  first_name, last_name , email, phone_number,user_role from user;
-end //
+	values (null, null, SHA2(user_password, 224),phone_number,user_email,'customer');
+	select  * from user_details where email = user_email;
+end $$
 
-call customer_sign_up("oladele.alade@gmail.com", "password","8169084566");
+call customer_sign_up("samtherfilam@gmail.com", "powercouple","8169084566");
 
 
 
@@ -23,7 +23,8 @@ create procedure get_users_by_role(
 role varchar (10)
 )
 begin 
-	select first_name, last_name, email , phone_number from user where user_role = role;
+	-- used views 
+	select  * from user_details where user_role = role;
 end $$
 
 call get_users_by_role("customer");
@@ -32,21 +33,22 @@ call get_users_by_role("customer");
 
 --  create new staff 
 drop procedure if exists staff_sign_up;
-delimiter //
+delimiter $$
 create procedure staff_sign_up ( 
 first_name varchar(10),
 last_name varchar(15),
-email varchar(30),
+user_email varchar(30),
 user_password varchar(224), 
 phone_number varchar(11) 
 ) 
 begin
 	insert into user (first_name,last_name, user_password, phone_number,email,user_role) 
-	values (first_name,last_name,SHA2(user_password, 224),phone_number,email,'staff');
-	select  first_name, last_name , email, phone_number,user_role from user;
-end //
+	values (first_name,last_name,SHA2(user_password, 224),phone_number,user_email,'staff');
+    -- used views here 
+	 select  * from user_details where email = user_email;
+end $$
 
-call staff_sign_up("summer", "blue","summer@gmail.com", "password","8169084566");
+call staff_sign_up("harvey", "stewart","harvey@gmail.com", "smithms","816994598");
 
 
 -- reset password
@@ -59,7 +61,7 @@ begin
 	update user 
     set user_password = SHA2(new_password,224)
     where email = email;
-   select  first_name, last_name , email, phone_number,user_role from user;
+   select  * from user_details;
 end $$
 
 call reset_password("summer@gmail.com","summerbloom")
@@ -155,7 +157,7 @@ begin
     set valid_till =  ADDTIME(created_at, CONCAT(hrs,":",mins,":",sec) );
     set access_token = substring(MD5(RAND()),1,224);
     
-    insert into auth_token values(user,access_token,valid_till);
+    insert into auth_token values(user, access_token, valid_till);
   
 end $$
 

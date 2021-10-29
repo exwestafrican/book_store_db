@@ -8,9 +8,9 @@ email varchar(30)
 returns int
 DETERMINISTIC
 begin 
-declare is_valid int;
-select REGEXP_LIKE(email,'^[^@]+@[^@]+\.[^@]{2,}$') into is_valid;
-return is_valid;
+	declare is_valid int;
+	select REGEXP_LIKE(email,'^[^@]+@[^@]+\.[^@]{2,}$') into is_valid;
+	return is_valid;
 end //
 
 
@@ -32,8 +32,7 @@ end $$
 select hash_password("password");
 
 
--- AUTHETICATE USERS
-
+-- VALIDATE USER LOGIN
 drop function if exists is_login_credentials_valid;
 delimiter $$
 create function is_login_credentials_valid(
